@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Sampark Setu{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <h1>Edit Profile</h1>
+            <a href="{{ url_for('chat.index') }}" class="back-btn">← Back to Chat</a>
+        </div>
+        
+        <div class="profile-content">
+            <!-- Profile Picture Section -->
+            <div class="profile-section">
+                <h3>Profile Picture</h3>
+                <div class="profile-picture-section">
+                    <div class="profile-picture-preview" id="profile-picture-preview">
+                        <img id="profile-picture-img" src="" alt="Profile Picture" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="profile-picture-placeholder" id="profile-picture-placeholder">
+                            <span id="profile-initial">U</span>
+                        </div>
+                    </div>
+                    <label for="profile-picture-input" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload Picture
+                    </label>
+                    <input type="file" id="profile-picture-input" accept="image/*" style="display: none;">
+                    <p class="form-hint">Max size: 5MB. Formats: PNG, JPG, JPEG, GIF, WEBP</p>
+                </div>
+            </div>
+            
+            <!-- Profile Form -->
+            <form id="profile-form" class="profile-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required minlength="3" maxlength="80">
+                </div>
+                
+                <div class="form-group">
+                    <label for="display-name">Display Name (Optional)</label>
+                    <input type="text" id="display-name" name="display_name" maxlength="100" placeholder="Leave empty to use username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('chat.index') }}'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-container {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.profile-card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: 32px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-header h1 {
+    color: var(--text-primary);
+    font-size: 28px;
+    margin: 0;
+}
+
+.back-btn {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.back-btn:hover {
+    color: var(--primary-light);
+}
+
+.profile-section {
+    margin-bottom: 32px;
+}
+
+.profile-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+.profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.profile-picture-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 3px solid var(--primary);
+    background: var(--bg-tertiary);
+}
+
+.profile-picture-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-picture-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    font-size: 48px;
+    font-weight: 600;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-group input {
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: var(--transition-fast);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px 16px;
+    }
+    
+    .profile-card {
+        padding: 24px;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load current profile data
+    try {
+        const response = await fetch('/api/profile');
+        const user = await response.json();
+        
+        document.getElementById('username').value = user.username || '';
+        document.getElementById('display-name').value = user.display_name || '';
+        document.getElementById('email').value = user.email || '';
+        
+        // Set profile picture
+        updateProfilePicture(user.profile_picture, user.username);
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        showNotification('Failed to load profile', 'error');
+    }
+    
+    // Profile picture upload
+    const pictureInput = document.getElementById('profile-picture-input');
+    pictureInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const formData = new FormData();
+        formData.append('picture', file);
+        
+        try {
+            const response = await fetch('/api/profile/picture', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                updateProfilePicture(data.profile_picture);
+                // Store updated profile picture
+                sessionStorage.setItem('profileUpdated', 'true');
+                sessionStorage.setItem('updatedProfilePicture', data.profile_picture);
+                showNotification('Profile picture updated', 'success');
+            } else {
+                showNotification(data.error || 'Failed to upload picture', 'error');
+            }
+        } catch (error) {
+            console.error('Error uploading picture:', error);
+            showNotification('Failed to upload picture', 'error');
+        }
+    });
+    
+    // Profile form submit
+    const profileForm = document.getElementById('profile-form');
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            username: document.getElementById('username').value.trim(),
+            display_name: document.getElementById('display-name').value.trim(),
+            email: document.getElementById('email').value.trim()
+        };
+        
+        try {
+            const response = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showNotification('Profile updated successfully', 'success');
+                // Store updated profile in sessionStorage so chat page can update
+                sessionStorage.setItem('profileUpdated', 'true');
+                sessionStorage.setItem('updatedProfile', JSON.stringify(data.user));
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            } else {
+                showNotification(data.error || 'Failed to update profile', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            showNotification('Failed to update profile', 'error');
+        }
+    });
+    
+    function updateProfilePicture(pictureUrl, username) {
+        const img = document.getElementById('profile-picture-img');
+        const placeholder = document.getElementById('profile-picture-placeholder');
+        const initial = document.getElementById('profile-initial');
+        
+        if (pictureUrl) {
+            img.src = pictureUrl;
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+        } else {
+            img.style.display = 'none';
+            placeholder.style.display = 'flex';
+            if (username) {
+                initial.textContent = username[0].toUpperCase();
+            }
+        }
+    }
+    
+    function showNotification(message, type) {
+        // Simple notification - you can enhance this
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: ${type === 'success' ? '#10b981' : '#ef4444'};
+            color: white;
+            border-radius: 8px;
+            z-index: 10000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}
+

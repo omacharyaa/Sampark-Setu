@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - Sampark Setu{% endblock %}
+
+{% block content %}
+<div class="chat-app">
+    <!-- Mobile Top Navigation Bar -->
+    <nav class="mobile-nav" id="mobile-nav">
+        <button class="nav-btn" id="toggle-rooms-sidebar" aria-label="Rooms">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+        </button>
+        <div class="nav-title">
+            <h2 id="mobile-room-name">Sampark Setu</h2>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Light/Dark Mode">
+                <svg id="theme-icon-sun" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg id="theme-icon-moon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button class="nav-btn" id="toggle-gif-search" aria-label="GIF Search">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <path d="M21 15l-5-5L5 21"></path>
+                </svg>
+            </button>
+            <button class="nav-btn" id="toggle-users-sidebar" aria-label="Users">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Left Sidebar - Rooms -->
+    <aside class="sidebar sidebar-left" id="rooms-sidebar">
+        <div class="sidebar-header">
+            <div class="user-info">
+                <div class="user-avatar-container" id="sidebar-user-avatar" data-user-id="{{ current_user.id }}">
+                    {% if current_user.profile_picture %}
+                    <img src="{{ current_user.profile_picture }}" alt="{{ current_user.display_name or current_user.username }}" id="sidebar-profile-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="user-avatar" id="sidebar-profile-placeholder" style="display: none;">
+                        {{ (current_user.display_name or current_user.username)[0].upper() }}
+                    </div>
+                    {% else %}
+                    <div class="user-avatar" id="sidebar-profile-placeholder">
+                        {{ (current_user.display_name or current_user.username)[0].upper() }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="user-details">
+                    <h3>
+                        {{ current_user.display_name or current_user.username }}
+                        <span class="status-indicator online"></span>
+                    </h3>
+                    <a href="{{ url_for('profile.profile') }}" class="profile-link" title="Edit Profile" style="font-size: 12px; color: var(--text-muted); text-decoration: none; margin-top: 4px;">Edit Profile</a>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="logout-btn" id="theme-toggle-desktop" title="Toggle Light/Dark Mode" style="background: none; border: none; cursor: pointer;">
+                    <svg id="theme-icon-sun-desktop" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg id="theme-icon-moon-desktop" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <a href="{{ url_for('auth.logout') }}" class="logout-btn" title="Logout">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Join Room by ID Section -->
+            <div class="join-room-section">
+                <button class="btn btn-primary btn-block" id="toggle-join-room">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    Join Room by ID
+                </button>
+                <form id="join-room-form" class="join-room-form" style="display: none;">
+                    <input type="text" id="room-id-input" placeholder="Enter Room ID" required pattern="[0-9]+" title="Enter a valid room ID number">
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Join</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-join-room">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Create Room Section -->
+            <div class="create-room-section">
+                <button class="btn btn-secondary btn-block" id="toggle-create-room">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create New Room
+                </button>
+                <form id="create-room-form" class="create-room-form" style="display: none;">
+                    <input type="text" id="room-name-input" placeholder="Room name (ID will be auto-generated)" required minlength="3">
+                    <input type="text" id="room-description-input" placeholder="Description (optional)">
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-create-room">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Joined Rooms List -->
+            <div class="sidebar-section">
+                <h4>Your Rooms</h4>
+                <div class="rooms-list" id="rooms-list">
+                    {% if rooms %}
+                        {% for room in rooms %}
+                        <div class="room-item" 
+                             data-room-id="{{ room.id }}" 
+                             data-room-name="{{ room.name }}"
+                             onclick="joinRoomById({{ room.id }}, '{{ room.name }}')">
+                            <div class="room-icon">💬</div>
+                            <div class="room-info">
+                                <div class="room-name">{{ room.name }}</div>
+                                <div class="room-id">ID: {{ room.id }}</div>
+                                {% if room.description %}
+                                <div class="room-description">{{ room.description }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No rooms joined yet</p>
+                            <p class="empty-hint">Join a room by ID to start chatting</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="chat-main">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <h2 id="current-room-name">Welcome</h2>
+                <span class="room-meta" id="room-meta">Join a room by ID to start chatting</span>
+            </div>
+            <div class="chat-header-actions">
+                <button class="header-btn" id="header-gif-btn" title="Search GIFs">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <path d="M21 15l-5-5L5 21"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container" id="messages-container">
+            <div class="messages-list" id="messages-list">
+                <div class="welcome-message">
+                    <div class="welcome-icon">💬</div>
+                    <h3>Welcome to Sampark Setu!</h3>
+                    <p>Join a room by entering its ID, or create a new room to start chatting.</p>
+                </div>
+            </div>
+            
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                <span class="typing-dots">
+                    <span></span><span></span><span></span>
+                </span>
+                <span id="typing-text"></span>
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="message-input-container">
+            <form id="message-form" class="message-form">
+                <div class="input-wrapper">
+                    <button type="button" class="input-action-btn" id="attachment-btn" title="Attach File">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                        </svg>
+                    </button>
+                    <input type="file" id="file-input" style="display: none;" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf,.csv">
+                    <button type="button" class="input-action-btn" id="emoji-btn" title="Emoji">
+                        😊
+                    </button>
+                    <button type="button" class="input-action-btn" id="gif-btn" title="GIF">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <path d="M21 15l-5-5L5 21"></path>
+                        </svg>
+                    </button>
+                    <input 
+                        type="text" 
+                        id="message-input" 
+                        placeholder="Type your message..." 
+                        autocomplete="off"
+                        disabled
+                    >
+                    <button type="button" class="input-action-btn voice-btn" id="voice-record-btn" title="Record Voice">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                    </button>
+                    <button type="submit" class="send-btn" id="send-btn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Right Sidebar - Room Members -->
+    <aside class="sidebar sidebar-right" id="users-sidebar">
+        <div class="sidebar-header">
+            <h3>Room Members</h3>
+            <button class="close-sidebar-btn" id="close-users-sidebar" type="button" aria-label="Close sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="users-list" id="users-list">
+                <div class="empty-state">
+                    <p>Join a room to see members</p>
+                </div>
+            </div>
+            <div class="online-count" id="online-count">
+                0 in room
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+</div>
+
+<!-- Emoji Picker Modal -->
+<div class="modal" id="emoji-modal">
+    <div class="modal-content emoji-picker">
+        <div class="modal-header">
+            <span>Select Emoji</span>
+            <button class="modal-close" id="emoji-close">&times;</button>
+        </div>
+        <div class="emoji-grid" id="emoji-grid">
+            <!-- Emojis will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- GIF Search Modal -->
+<div class="modal" id="gif-modal">
+    <div class="modal-content gif-picker">
+        <div class="modal-header">
+            <div class="gif-search-box">
+                <input type="text" id="gif-search-input" placeholder="Search GIFs...">
+                <button id="gif-search-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <button class="modal-close" id="gif-close">&times;</button>
+        </div>
+        <div class="gif-tabs">
+            <button class="gif-tab active" data-tab="trending">Trending</button>
+            <button class="gif-tab" data-tab="search">Search</button>
+        </div>
+        <div class="gif-results" id="gif-results">
+            <div class="gif-loading">Loading GIFs...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Voice Recording Modal -->
+<div class="modal" id="voice-modal">
+    <div class="modal-content voice-recorder">
+        <div class="modal-header">
+            <span>Voice Message</span>
+            <button class="modal-close" id="voice-close">&times;</button>
+        </div>
+        <div class="voice-recorder-content">
+            <div class="voice-visualizer" id="voice-visualizer">
+                <div class="voice-wave">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="voice-timer" id="voice-timer">00:00</div>
+            <div class="voice-controls">
+                <button class="btn btn-danger" id="voice-stop-btn" style="display: none;">Stop</button>
+                <button class="btn btn-primary voice-record-btn-large" id="voice-start-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                    </svg>
+                </button>
+                <button class="btn btn-success" id="voice-send-btn" style="display: none;">Send</button>
+            </div>
+            <audio id="voice-preview" controls style="display: none; width: 100%; margin-top: 20px;"></audio>
+        </div>
+    </div>
+</div>
+
+<!-- SocketIO -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}
