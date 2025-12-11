@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: sampark-setu
+    env: python
+    buildCommand: pip install -r requirements.txt && python init_db.py
+    startCommand: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT --timeout 120 --log-level info run:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sampark-setu-db
+          property: connectionString
+      - key: RENDER
+        value: true
+      - key: ASYNC_MODE
+        value: eventlet
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  - name: sampark-setu-db
+    plan: free
+    databaseName: sampark_setu
+    user: sampark_setu_user
+
