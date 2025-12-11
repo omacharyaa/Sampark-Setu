@@ -52,7 +52,10 @@ If you prefer to configure manually:
      - **Name**: `sampark-setu`
      - **Environment**: `Python 3`
      - **Build Command**: `pip install -r requirements.txt && python init_db.py`
-     - **Start Command**: `gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT --timeout 120 run:app`
+     - **Start Command**: `gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT --timeout 120 --access-logfile - --error-logfile - run:app`
+     
+     **Alternative**: You can also use `wsgi:app` if you prefer:
+     - **Start Command**: `gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT --timeout 120 --access-logfile - --error-logfile - wsgi:app`
      - **Plan**: Free (or choose a paid plan)
 
 3. **Set Environment Variables**
