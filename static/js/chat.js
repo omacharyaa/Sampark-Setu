@@ -474,6 +474,7 @@ async function loadMessages(roomId) {
         
         const response = await fetch(`/api/messages/${roomId}`, {
             signal: controller.signal,
+            credentials: 'include',  // Include cookies/session for authentication
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -485,11 +486,18 @@ async function loadMessages(roomId) {
             const errorText = await response.text();
             console.error('API Error:', response.status, errorText);
             let errorMessage = `HTTP ${response.status}: Failed to load messages`;
-            try {
-                const errorJson = JSON.parse(errorText);
-                errorMessage = errorJson.error || errorMessage;
-            } catch (e) {
-                errorMessage = errorText || errorMessage;
+            
+            // Check for authentication issues
+            if (response.status === 401 || response.status === 403) {
+                errorMessage = 'Authentication failed. Please refresh the page and log in again.';
+                console.error('Authentication error - session may have expired');
+            } else {
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMessage = errorJson.error || errorMessage;
+                } catch (e) {
+                    errorMessage = errorText || errorMessage;
+                }
             }
             throw new Error(errorMessage);
         }
@@ -643,7 +651,9 @@ async function loadRoomOnlineUsers(roomId) {
     }
     
     try {
-        const response = await fetch(`/api/online-users/${roomId}`);
+        const response = await fetch(`/api/online-users/${roomId}`, {
+            credentials: 'include'  // Include cookies/session for authentication
+        });
         if (response.ok) {
             const users = await response.json();
             updateOnlineUsersList(users);
@@ -767,6 +777,7 @@ async function sendVoiceMessage(audioBlob) {
         
         const response = await fetch('/upload_audio', {
             method: 'POST',
+            credentials: 'include',  // Include cookies/session for authentication
             body: formData
         });
         
@@ -832,7 +843,9 @@ async function searchGIFs(query = '') {
             ? `${endpoint}?q=${encodeURIComponent(query)}&limit=20`
             : `${endpoint}?limit=20`;
         
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            credentials: 'include'  // Include cookies/session for authentication
+        });
         const data = await response.json();
         
         if (data.gifs && data.gifs.length > 0) {
@@ -961,6 +974,7 @@ async function uploadAndSendFile(file) {
         
         const response = await fetch('/upload_attachment', {
             method: 'POST',
+            credentials: 'include',  // Include cookies/session for authentication
             body: formData
         });
         
@@ -1385,7 +1399,9 @@ function updateRoomsList(rooms) {
 // Refresh rooms list after joining
 async function refreshRoomsList() {
     try {
-        const response = await fetch('/api/rooms');
+        const response = await fetch('/api/rooms', {
+            credentials: 'include'  // Include cookies/session for authentication
+        });
         const rooms = await response.json();
         updateRoomsList(rooms);
     } catch (error) {
@@ -1425,7 +1441,9 @@ function updateSidebarProfilePicture(userData = null) {
         }
     }
     
-    const loadProfile = userData ? Promise.resolve(userData) : fetch('/api/profile').then(response => response.json());
+    const loadProfile = userData ? Promise.resolve(userData) : fetch('/api/profile', {
+        credentials: 'include'  // Include cookies/session for authentication
+    }).then(response => response.json());
     
     loadProfile
         .then(user => {
@@ -1748,12 +1766,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const response = await fetch('/join-room', {
                     method: 'POST',
+                    credentials: 'include',  // Include cookies/session for authentication
                     body: formData
                 });
                 
                 if (response.ok) {
                     // Fetch room details and join
-                    const roomsResponse = await fetch('/api/rooms');
+                    const roomsResponse = await fetch('/api/rooms', {
+                        credentials: 'include'  // Include cookies/session for authentication
+                    });
                     const rooms = await roomsResponse.json();
                     const room = rooms.find(r => r.id === roomId);
                     
@@ -1821,6 +1842,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const response = await fetch('/create-room', {
                     method: 'POST',
+                    credentials: 'include',  // Include cookies/session for authentication
                     body: formData
                 });
                 
@@ -1846,7 +1868,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const roomId = parseInt(roomIdParam);
         if (!isNaN(roomId)) {
             // Fetch room details
-            fetch('/api/rooms')
+            fetch('/api/rooms', {
+                credentials: 'include'  // Include cookies/session for authentication
+            })
                 .then(response => response.json())
                 .then(rooms => {
                     const room = rooms.find(r => r.id === roomId);
