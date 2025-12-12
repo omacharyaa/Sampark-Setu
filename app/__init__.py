@@ -113,3 +113,8 @@ def create_app():
     
     return app
 
+# Provide default WSGI application for servers expecting `app:app`
+# This mirrors `wsgi.py` but keeps compatibility if start command is misconfigured
+app = create_app()
+application = app
+
