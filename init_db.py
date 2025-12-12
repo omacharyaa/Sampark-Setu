@@ -3,7 +3,8 @@ Initialize database tables and run migrations
 Run this after deployment or when database schema changes
 """
 
-from app import create_app, db
+from app import create_app
+from app.models import db
 import os
 
 def init_database():
