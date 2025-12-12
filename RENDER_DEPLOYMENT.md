@@ -99,10 +99,13 @@ The build script automatically runs `init_db.py` which:
 - Creates all database tables
 - Runs necessary migrations (adds missing columns like `file_name`, `profile_picture`, `display_name`)
 
+**Important**: The app also runs runtime migrations on startup as a safety net. This ensures that even if migrations fail during build, they will be applied when the app starts.
+
 For future migrations:
 1. Update your models in `app/models.py`
 2. Add migration logic to `init_db.py`
-3. Or use Flask-Migrate (recommended for complex migrations)
+3. The app will automatically apply migrations on startup
+4. Or use Flask-Migrate (recommended for complex migrations)
 
 ### Custom Domain
 
@@ -146,6 +149,37 @@ For future migrations:
 - Check `/uploads` directory exists
 - Verify file permissions
 - Consider using cloud storage for production
+
+### "Failed to Load Messages" Error
+
+If you see "Failed to load messages" on the deployed version:
+
+1. **Check Database Migrations**:
+   - The app should automatically run migrations on startup
+   - Check the application logs for migration errors
+   - Look for messages like "Runtime migration: Added file_name column"
+
+2. **Verify Database Connection**:
+   - Ensure `DATABASE_URL` is set correctly
+   - Check that PostgreSQL database is running
+   - Verify connection string format (`postgresql://` not `postgres://`)
+
+3. **Check Application Logs**:
+   - Go to Render dashboard → Your service → Logs
+   - Look for database errors or migration failures
+   - Common issues:
+     - Missing columns (`file_name`, `profile_picture`, `display_name`)
+     - Database connection timeouts
+     - Permission errors
+
+4. **Manual Migration** (if needed):
+   - Use Render's Shell feature to connect to your service
+   - Run: `python init_db.py`
+   - This will ensure all migrations are applied
+
+5. **Restart the Service**:
+   - Sometimes a restart helps apply pending migrations
+   - Go to Render dashboard → Your service → Manual Deploy → Clear build cache & deploy
 
 ## Support
 

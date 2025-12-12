@@ -101,6 +101,55 @@ def create_app():
     with app.app_context():
         db.create_all()
         
+        # Run runtime migrations to ensure all columns exist
+        # This is a safety net in case migrations didn't run during build
+        try:
+            from sqlalchemy import text, inspect
+            inspector = inspect(db.engine)
+            database_url = os.environ.get('DATABASE_URL', '')
+            
+            def column_exists_safe(table_name, column_name):
+                """Safely check if column exists"""
+                try:
+                    columns = [col['name'] for col in inspector.get_columns(table_name)]
+                    return column_name in columns
+                except:
+                    return False
+            
+            # Check and add missing columns
+            with db.engine.connect() as conn:
+                # Check file_name in messages
+                if not column_exists_safe('messages', 'file_name'):
+                    try:
+                        conn.execute(text("ALTER TABLE messages ADD COLUMN file_name VARCHAR(255)"))
+                        conn.commit()
+                        print("✓ Runtime migration: Added file_name column to messages")
+                    except Exception as e:
+                        conn.rollback()
+                        print(f"⚠ Runtime migration: file_name may already exist: {e}")
+                
+                # Check profile_picture and display_name in users
+                if not column_exists_safe('users', 'profile_picture'):
+                    try:
+                        conn.execute(text("ALTER TABLE users ADD COLUMN profile_picture VARCHAR(255)"))
+                        conn.commit()
+                        print("✓ Runtime migration: Added profile_picture column to users")
+                    except Exception as e:
+                        conn.rollback()
+                        print(f"⚠ Runtime migration: profile_picture may already exist: {e}")
+                
+                if not column_exists_safe('users', 'display_name'):
+                    try:
+                        conn.execute(text("ALTER TABLE users ADD COLUMN display_name VARCHAR(100)"))
+                        conn.commit()
+                        print("✓ Runtime migration: Added display_name column to users")
+                    except Exception as e:
+                        conn.rollback()
+                        print(f"⚠ Runtime migration: display_name may already exist: {e}")
+        except Exception as e:
+            # Don't fail app startup if migrations fail - log and continue
+            print(f"⚠ Runtime migration check failed (non-critical): {e}")
+        
         # Create upload directories if they don't exist
         uploads_dir = os.path.join(root_dir, 'uploads')
         audio_dir = os.path.join(uploads_dir, 'audio')
