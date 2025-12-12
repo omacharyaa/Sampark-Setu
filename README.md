@@ -103,6 +103,7 @@ Sampark Setu/
 - `DATABASE_URL`: Database connection string (SQLite used by default)
 - `GIPHY_API_KEY`: Giphy API key for GIF search (optional)
 - `RENDER`: Set to `true` when deployed on Render
+- `RAILWAY`: Set to `true` when deployed on Railway
 - `ASYNC_MODE`: SocketIO async mode (`eventlet` or `threading`)
 
 ### Database
@@ -111,6 +112,17 @@ Sampark Setu/
 - **Production**: PostgreSQL (configured via `DATABASE_URL`)
 
 ## Deployment
+
+### Deploy to Railway
+
+See `RAILWAY_DEPLOYMENT.md` for detailed deployment instructions.
+
+Quick steps:
+1. Push code to GitHub
+2. Create a new project on Railway and connect your repository
+3. Add PostgreSQL database service
+4. Set environment variables (`SECRET_KEY`, `RAILWAY=true`, `ASYNC_MODE=eventlet`)
+5. Railway will auto-detect `Procfile` or `railway.json` and deploy
 
 ### Deploy to Render
 

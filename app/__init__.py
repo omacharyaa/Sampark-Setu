@@ -34,7 +34,7 @@ def create_app():
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'sampark-setu-secret-key-change-in-production')
     
-    # Database configuration - use PostgreSQL on Render, SQLite locally
+    # Database configuration - use PostgreSQL on Render/Railway, SQLite locally
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
         # Render provides PostgreSQL, convert postgres:// to postgresql://
@@ -54,7 +54,13 @@ def create_app():
         }
     
     # Session configuration
-    is_production = os.environ.get('RENDER') == 'true' or os.environ.get('FLASK_ENV') == 'production'
+    # Detect production environment (Render, Railway, or explicit FLASK_ENV)
+    is_production = (
+        os.environ.get('RENDER') == 'true' or 
+        os.environ.get('RAILWAY_ENVIRONMENT') is not None or
+        os.environ.get('RAILWAY') == 'true' or
+        os.environ.get('FLASK_ENV') == 'production'
+    )
     app.config['SESSION_COOKIE_SECURE'] = is_production  # True in production with HTTPS
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
